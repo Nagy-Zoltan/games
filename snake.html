@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake</title>
+</head>
+
+
+
+<body>
+
+    <canvas id="arena" width="600" height="600" style="border:5px solid #000000; background-color: lightblue">
+    
+    </canvas>
+
+    <h1 id='score' style="position: absolute; top: 0px; left: 800px; color: red;">Length: 4</h1>
+
+
+    <script type="text/javascript">
+
+        function startGame(){
+
+            
+            var score = document.getElementById('score')
+            var len = 4
+            var arena = document.getElementById('arena')
+            var ctx = arena.getContext('2d')
+            ctx.fillStyle = 'red'
+            
+            class Snake{
+                constructor(body, direction){
+                    this.body = body
+                    this.direction = direction
+                    this.head = body[body.length - 1]
+                    for(let part of this.body){
+                        ctx.fillRect(part[0], part[1], 10, 10)
+                    }
+                }
+
+
+                updateSnake(){
+                    let selfbite = false
+                    this.head = this.body[this.body.length - 1]
+                    let nohead = this.body.slice(0, this.body.length-1)
+                    for(let part of nohead){
+                        if (part[0] == this.head[0] && part[1] == this.head[1]){
+                            selfbite = true
+                            break
+                        }
+                    }
+
+                    if (this.head[0] <= -1 || 600 <= this.head[0] || this.head[1] <= -1 || 600 <= this.head[1] || selfbite){
+                        this.body = [[300, 310], [300, 300], [300, 290], [300, 280], [300, 270]]
+                        this.direction = 'up'
+                        this.head = [300, 270]
+                        placeFood()
+                        len = 4
+                        score.innerHTML = `Length: ${len}`
+                    }
+                    else{
+                        ctx.fillStyle = 'red'
+                        for(let part of this.body){
+                            ctx.fillRect(part[0], part[1], 10, 10)
+                        }
+                        ctx.fillStyle = 'green'
+                        ctx.fillRect(food_x, food_y, 10, 10)
+                    }   
+                }
+
+
+                move(direction){
+
+                    switch (direction){
+                        case 'up':{
+                            //if (this.direction == 'up' || this.direction == 'down'){return}
+                            this.body.push([this.head[0], this.head[1] - 10])
+                            this.direction = 'up'
+                            break;
+                        }
+                        case 'down':{
+                            //if (this.direction == 'up' || this.direction == 'down'){return}
+                            this.body.push([this.head[0], this.head[1] + 10])
+                            this.direction = 'down'
+                            break;
+                        }
+                        case 'left':{
+                            //if (this.direction == 'left' || this.direction == 'right'){return}
+                            this.body.push([this.head[0] - 10, this.head[1]])
+                            this.direction = 'left'
+                            break;
+                        }
+                        case 'right':{
+                            //if (this.direction == 'left' || this.direction == 'right'){return}
+                            this.body.push([this.head[0] + 10, this.head[1]])
+                            this.direction = 'right'
+                            break;
+                        }
+                    }
+                    ctx.fillStyle = 'lightblue'
+                    ctx.fillRect(0, 0, 600, 600)
+                    this.updateSnake()
+                    if (this.head[0] == food_x && this.head[1] == food_y){
+                        placeFood()
+                        len++
+                        score.innerHTML = `Length: ${len}`
+                    }
+                    else{this.body.shift()}
+
+
+                }
+
+            }
+
+
+
+            snake = new Snake([[300, 300], [300, 290], [300, 280], [300, 270]], 'up')
+            
+            document.addEventListener('keydown', (event) => {
+                        switch (event.keyCode){
+                            case 38:{
+                                if (snake.direction != 'up' && snake.direction != 'down'){
+                                    snake.move('up')
+                                }
+                                break;
+                                
+                            } 
+                            case 40:{
+                                if (snake.direction != 'up' && snake.direction != 'down'){
+                                    snake.move('down')
+                                }
+                                break;
+                                
+                            }
+                            case 37:{
+                                if (snake.direction != 'left' && snake.direction != 'right'){
+                                    snake.move('left')
+                                }
+                                break;
+                                
+                            }
+                            case 39:{
+                                if (snake.direction != 'left' && snake.direction != 'right'){
+                                    snake.move('right')
+                                }
+                                break;
+                                
+                            }
+                        }
+
+                    } 
+                )
+
+            setInterval(() => {
+                    snake.move(snake.direction)
+                }, 50
+            
+            )
+
+            function placeFood(){
+                food_x = Math.floor(Math.random() * 600)
+                food_y = Math.floor(Math.random() * 600)
+                food_x = food_x - food_x % 10
+                food_y = food_y - food_y % 10
+                if (snake.body.includes([food_x, food_y])){placeFood()}
+            }
+
+            placeFood()
+
+        }
+
+        startGame()
+
+
+    </script>
+</body>
+</html>

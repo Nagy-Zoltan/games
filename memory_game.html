@@ -1,0 +1,98 @@
+<html>
+
+<body>
+
+	<h2 style="position: absolute; top: 10; left: 100">Enter grid size: </h2>
+	<input id="grid_size", style="position: absolute; top: 70; left: 100; text-align: right">
+	<button style="position: absolute; top: 115; left: 190", onclick="pressed()">Start game</button>
+
+
+	<script>
+
+		buttons = []
+
+		function pressed(){
+			input = document.getElementById("grid_size")
+			console.log('pressed')
+
+			if (parseInt(input.value) % 2 == 0){
+				for (button of buttons){
+					document.body.removeChild(button)
+				}
+				buttons = []
+				start_game(parseInt(input.value))
+				input.value = ''
+			}
+			else{
+				input.value = 'Please type an even integer'
+			}
+		}
+
+		
+
+		function start_game(grid_size){
+
+			options = Array.from(Array(grid_size**2 / 2).keys()).concat(Array.from(Array(grid_size**2 / 2).keys()))
+
+
+			found = []
+			var up = 0
+			current = []
+
+			function hide_all(){
+				for (button of buttons){
+					if (!found.includes(parseInt(button.innerHTML))){
+					button.innerHTML = ''
+					}
+				}
+			}
+
+			for (y = 0; y <= grid_size - 1; y++){
+				for (x = 0; x <= grid_size - 1; x++){
+					buttons.push(document.createElement('BUTTON'))
+					let last_button = buttons[buttons.length-1]
+					document.body.appendChild(last_button)
+					last_button.style.position = 'absolute'
+					last_button.style.height = "50px"
+					last_button.style.width = "50px"
+					last_button.style.left = x*50 + 500
+					last_button.style.top = y*50 + 100
+					random = Math.floor(Math.random() * options.length)
+					let card = options[random]
+					options.splice(random, 1)
+					last_button.addEventListener('click', function flip(){
+						if (last_button.innerHTML == ''){
+						last_button.innerHTML = card
+
+						up += 1
+
+						current.push(card)
+						if (current[0] == current[1]){
+							found.push(current[0])
+							up = 0
+							current = []
+						}
+
+
+			
+						
+						if (up % 3 == 0){
+							hide_all()
+							current = []
+							flip()
+							
+						}
+
+						}
+					})
+
+				}
+			}
+
+		}
+
+		
+	</script>
+
+</body>
+</html>
